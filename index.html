@@ -10,30 +10,23 @@
         body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; color: var(--dark); scroll-behavior: smooth; }
         nav { background: var(--dark); padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; }
         nav a { color: var(--gold); text-decoration: none; margin: 0 15px; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
-        
         .hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('http://googleusercontent.com/image_collection/image_retrieval/12313878178324313230_0'); 
                 background-size: cover; background-position: center; height: 50vh; display: flex; flex-direction: column; 
                 justify-content: center; align-items: center; color: var(--gold); text-align: center; }
-        
         .container { max-width: 1100px; margin: auto; padding: 40px 20px; }
-        
         .section-title { color: var(--gold); border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-top: 40px; text-transform: uppercase; letter-spacing: 1px; }
-        
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 20px; }
         .food-card { border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: white; transition: 0.3s; }
-        .food-card:hover { transform: translateY(-5px); }
         .food-card img { width: 100%; height: 220px; object-fit: cover; }
         .food-info { padding: 20px; }
         .food-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .food-name { font-weight: bold; font-size: 1.2rem; }
         .food-price { color: var(--gold); font-weight: bold; }
-        .food-desc { font-size: 0.9rem; color: #666; font-style: italic; line-height: 1.4; }
-        .seasonal { background: #e74c3c; color: white; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; }
-
-        .whatsapp-btn { background: #25D366; color: white; padding: 15px 35px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block; margin: 10px; font-size: 1.1rem; }
+        .food-desc { font-size: 0.9rem; color: #666; font-style: italic; }
+        .seasonal { background: #e74c3c; color: white; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; }
+        .whatsapp-btn { background: #25D366; color: white; padding: 15px 35px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block; margin: 10px; }
         .social-btn { display: inline-block; margin: 10px; padding: 12px 25px; border-radius: 5px; color: white; text-decoration: none; font-weight: bold; }
         .fb { background: #1877F2; } .ig { background: #E4405F; }
-        
         footer { background: var(--dark); color: white; text-align: center; padding: 40px; margin-top: 60px; border-top: 4px solid var(--gold); }
     </style>
 </head>
@@ -49,22 +42,79 @@
 <header class="hero" id="home">
     <h1>NAFEES HOME FOODS</h1>
     <p>Authentic Family Cooking by Master Chef Khala</p>
-    <p style="color:white; font-weight: normal;">Mount Pearl, NL</p>
+    <p style="color:white;">Mount Pearl, NL</p>
 </header>
 
 <div class="container">
-
     <h2 id="fastfood" class="section-title">Fast Food Favorites</h2>
     <div class="menu-grid">
         <div class="food-card">
-            <img src="http://googleusercontent.com/image_collection/image_retrieval/5029007678753765821_0" alt="Beef Burger">
+            <img src="http://googleusercontent.com/image_collection/image_retrieval/5029007678753765821_0" alt="Burger">
             <div class="food-info">
                 <div class="food-header"><span class="food-name">Classic Beef Burger</span><span class="food-price">$12.00</span></div>
-                <p class="food-desc">Juicy handmade patty with fresh lettuce, tomatoes, and house sauce.</p>
+                <p class="food-desc">Juicy handmade patty with fresh lettuce and house sauce.</p>
             </div>
         </div>
         <div class="food-card">
-            <img src="http://googleusercontent.com/image_collection/image_retrieval/2203459512848389895_0" alt="Chicken Wrap">
+            <img src="http://googleusercontent.com/image_collection/image_retrieval/2203459512848389895_0" alt="Wrap">
             <div class="food-info">
                 <div class="food-header"><span class="food-name">Savory Chicken Wrap</span><span class="food-price">$10.00</span></div>
-                <p class="food-desc">Grilled
+                <p class="food-desc">Grilled chicken with crunchy veggies and garlic cream.</p>
+            </div>
+        </div>
+        <div class="food-card">
+            <img src="http://googleusercontent.com/image_collection/image_retrieval/3094578793731901736_0" alt="BBQ">
+            <div class="food-info">
+                <div class="food-header"><span class="food-name">Chicken BBQ Skewers</span><span class="seasonal">Summer Only</span></div>
+                <p class="food-desc">Char-grilled skewers marinated in summer spices.</p>
+            </div>
+        </div>
+    </div>
+
+    <h2 id="main" class="section-title">Chef's Signature Dishes</h2>
+    <div class="menu-grid">
+        <div class="food-card">
+            <img src="http://googleusercontent.com/image_collection/image_retrieval/9040902708756539232_0" alt="Biryani">
+            <div class="food-info">
+                <div class="food-header"><span class="food-name">Authentic Biryani</span><span class="food-price">$18.00</span></div>
+                <p class="food-desc">Long-grain Basmati rice layered with spiced meat and herbs.</p>
+            </div>
+        </div>
+        <div class="food-card">
+            <img src="http://googleusercontent.com/image_collection/image_retrieval/12313878178324313230_0" alt="Masala">
+            <div class="food-info">
+                <div class="food-header"><span class="food-name">Chicken Masala</span><span class="food-price">$17.00</span></div>
+                <p class="food-desc">Tender chicken in a rich, creamy tomato gravy.</p>
+            </div>
+        </div>
+        <div class="food-card">
+            <img src="http://googleusercontent.com/image_collection/image_retrieval/10170307345265346575_0" alt="Beef">
+            <div class="food-info">
+                <div class="food-header"><span class="food-name">Sizzling Beef</span><span class="food-price">$20.00</span></div>
+                <p class="food-desc">Premium beef stir-fried with bell peppers and onions.</p>
+            </div>
+        </div>
+        <div class="food-card">
+            <img src="http://googleusercontent.com/image_collection/image_retrieval/14358354925762349002_0" alt="Lamb">
+            <div class="food-info">
+                <div class="food-header"><span class="food-name">Tender Lamb Shank</span><span class="food-price">$25.00</span></div>
+                <p class="food-desc">Slow-cooked for hours in a savory reduction.</p>
+            </div>
+        </div>
+    </div>
+
+    <section id="contact" style="text-align:center; margin-top:60px; background:#f9f9f9; padding:50px; border-radius:15px;">
+        <h2>Order for Pickup or Delivery</h2>
+        <p>Location: <strong>14 Peppertree Place, Mount Pearl</strong></p>
+        <a href="https://wa.me/17093256801" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> WhatsApp Order</a><br>
+        <a href="https://www.facebook.com/share/18KxdRbjjX/" class="social-btn fb"><i class="fab fa-facebook"></i> Facebook</a>
+        <a href="https://www.instagram.com/nfoods2025?igsh=Y3MwcXl2NDhlYmp1" class="social-btn ig"><i class="fab fa-instagram"></i> Instagram</a>
+    </section>
+</div>
+
+<footer>
+    <p>&copy; 2026 Nafees Home Foods | Mount Pearl, NL | 709-325-6801</p>
+</footer>
+
+</body>
+</html>
