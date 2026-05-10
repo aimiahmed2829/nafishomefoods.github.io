@@ -7,19 +7,43 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --gold: #D4AF37; --dark: #2c2c2c; --white: #ffffff; --light: #f4f4f4; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; color: var(--dark); padding-bottom: 200px; }
-        nav { background: var(--dark); padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; }
-        nav a { color: var(--gold); text-decoration: none; margin: 0 15px; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
-        .hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1200&auto=format&fit=crop'); 
-                background-size: cover; background-position: center; height: 25vh; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--gold); text-align: center; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; color: var(--dark); padding-bottom: 180px; }
+        
+        .hero { 
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1200&auto=format&fit=crop'); 
+            background-size: cover; background-position: center; 
+            height: 35vh; display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            color: var(--gold); text-align: center; padding: 20px;
+        }
+
+        /* LOGO STYLING */
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            padding: 5px;
+            margin-bottom: 15px;
+            border: 3px solid var(--gold);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
         .container { max-width: 1000px; margin: auto; padding: 20px; }
         .section-title { color: var(--gold); border-bottom: 2px solid var(--gold); padding-bottom: 5px; margin-top: 30px; text-transform: uppercase; }
         .menu-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 20px; }
         .menu-card { background: var(--light); padding: 15px; border-radius: 8px; border-left: 4px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
         .add-btn { background: var(--dark); color: var(--gold); border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        /* CART & FORM AREA */
-        #cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark); color: white; padding: 20px; display: none; flex-direction: column; border-top: 3px solid var(--gold); z-index: 2000; }
+        #cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark); color: white; padding: 20px; display: none; flex-direction: column; border-top: 3px solid var(--gold); z-index: 2000; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
         .customer-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .customer-inputs input { padding: 10px; border-radius: 5px; border: none; font-size: 0.9rem; }
         .cart-items-preview { font-size: 0.9rem; margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 8px; }
@@ -28,13 +52,9 @@
         .action-buttons { display: flex; gap: 10px; justify-content: space-between; align-items: center; }
         .order-btn { flex: 1; padding: 12px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; color: white; font-size: 0.85rem; }
         .whatsapp { background: #25D366; }
-        .sms { background: #007AFF; }
 
-        /* MODAL OVERLAY */
         #confirm-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 3000; justify-content: center; align-items: center; }
-        .modal-content { background: white; color: var(--dark); padding: 30px; border-radius: 15px; width: 90%; max-width: 450px; text-align: left; }
-        .modal-content h2 { color: var(--gold); margin-top: 0; }
-        .review-list { background: var(--light); padding: 15px; border-radius: 8px; margin: 15px 0; max-height: 200px; overflow-y: auto; }
+        .modal-content { background: white; color: var(--dark); padding: 30px; border-radius: 15px; width: 90%; max-width: 450px; }
         .modal-btns { display: flex; gap: 10px; }
         .modal-btns button { flex: 1; padding: 12px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; }
         .cancel-btn { background: #ddd; }
@@ -44,6 +64,9 @@
 <body>
 
 <header class="hero">
+    <div class="logo-container">
+        <img src="logo.jpg" alt="Nafees Home Foods Logo">
+    </div>
     <h1>NAFEES HOME FOODS</h1>
     <p>14 Peppertree Place, Mount Pearl | 709-730-9719</p>
 </header>
@@ -61,49 +84,41 @@
     <div class="cart-items-preview" id="cart-preview"></div>
     <div class="action-buttons">
         <div style="font-size: 1.1rem;"><strong>Total: $<span id="cart-total">0</span></strong></div>
-        <button class="order-btn whatsapp" onclick="showReview('whatsapp')"><i class="fab fa-whatsapp"></i> Review & Send</button>
-        <button class="order-btn sms" onclick="showReview('sms')"><i class="fas fa-comment"></i> Review & Text</button>
+        <button class="order-btn whatsapp" onclick="showReview()"><i class="fab fa-whatsapp"></i> Review & Send Order</button>
     </div>
 </div>
 
 <div id="confirm-modal">
     <div class="modal-content">
-        <h2>Review Your Order</h2>
-        <div id="modal-customer-info"></div>
-        <div class="review-list" id="modal-order-list"></div>
-        <div style="font-size: 1.2rem; margin-bottom: 20px;"><strong>Total: $<span id="modal-total">0</span></strong></div>
+        <h2 style="color:var(--gold)">Review Your Order</h2>
+        <div id="modal-customer-info" style="margin-bottom:10px;"></div>
+        <div id="modal-order-list" style="background:#f4f4f4; padding:15px; border-radius:8px; margin-bottom:15px; max-height:150px; overflow-y:auto;"></div>
+        <div style="font-size:1.2rem; margin-bottom:20px;"><strong>Total: $<span id="modal-total">0</span></strong></div>
         <div class="modal-btns">
             <button class="cancel-btn" onclick="closeReview()">Go Back</button>
-            <button class="confirm-btn" id="final-confirm-btn">Confirm & Send</button>
+            <button class="confirm-btn" onclick="sendOrder()">Confirm & Send</button>
         </div>
     </div>
 </div>
 
 <script>
     const menu = [
-        { name: "Samosa (1 pc)", price: 3 },
-        { name: "Samosa (4 pcs)", price: 10 },
-        { name: "Zinger Burger", price: 15 },
-        { name: "Zinger Burger Combo", price: 18 },
-        { name: "Zinger Roll", price: 13 },
-        { name: "Shawarma", price: 13 },
-        { name: "Mutton Qabli Pulao", price: 25 },
-        { name: "Chicken Biryani", price: 17 },
-        { name: "Chicken Pulao", price: 13 },
-        { name: "Simple Naan", price: 2 },
-        { name: "Roghni Naan", price: 3 },
-        { name: "Alo Pratha", price: 5 }
+        { name: "Samosa (1 pc)", price: 3 }, { name: "Samosa (4 pcs)", price: 10 },
+        { name: "Zinger Burger", price: 15 }, { name: "Zinger Burger Combo", price: 18 },
+        { name: "Zinger Roll", price: 13 }, { name: "Shawarma", price: 13 },
+        { name: "Mutton Qabli Pulao", price: 25 }, { name: "Chicken Biryani", price: 17 },
+        { name: "Chicken Pulao", price: 13 }, { name: "Simple Naan", price: 2 },
+        { name: "Roghni Naan", price: 3 }, { name: "Alo Pratha", price: 5 }
     ];
 
     let cart = {};
-    let activeType = 'whatsapp';
 
     function renderMenu() {
         const list = document.getElementById('full-menu');
-        menu.forEach((item) => {
+        menu.forEach(item => {
             const div = document.createElement('div');
             div.className = 'menu-card';
-            div.innerHTML = `<div><span class="item-name">${item.name}</span><br><small>$${item.price}</small></div>
+            div.innerHTML = `<div><strong>${item.name}</strong><br>$${item.price}</div>
                              <button class="add-btn" onclick="addToCart('${item.name}', ${item.price})">+ Add</button>`;
             list.appendChild(div);
         });
@@ -112,41 +127,32 @@
     function addToCart(name, price) {
         if (cart[name]) cart[name].qty += 1;
         else cart[name] = { price: price, qty: 1 };
-        updateCartDisplay();
+        updateCart();
     }
 
-    function removeFromCart(name) {
-        delete cart[name];
-        updateCartDisplay();
-    }
+    function removeFromCart(name) { delete cart[name]; updateCart(); }
 
-    function updateCartDisplay() {
+    function updateCart() {
         const bar = document.getElementById('cart-bar');
         const preview = document.getElementById('cart-preview');
         const totalDisp = document.getElementById('cart-total');
-        const cartKeys = Object.keys(cart);
+        const keys = Object.keys(cart);
         
-        if (cartKeys.length > 0) {
+        if (keys.length > 0) {
             bar.style.display = 'flex';
-            preview.innerHTML = cartKeys.map(name => `
-                <div class="cart-tag">${name} x ${cart[name].qty} <button class="remove-btn" onclick="removeFromCart('${name}')">×</button></div>
-            `).join('');
+            preview.innerHTML = keys.map(n => `<div class="cart-tag">${n} x ${cart[n].qty} <button class="remove-btn" onclick="removeFromCart('${n}')">×</button></div>`).join('');
             let total = 0;
-            cartKeys.forEach(name => total += (cart[name].price * cart[name].qty));
+            keys.forEach(n => total += (cart[n].price * cart[n].qty));
             totalDisp.innerText = total;
-        } else {
-            bar.style.display = 'none';
-        }
+        } else bar.style.display = 'none';
     }
 
-    function showReview(type) {
+    function showReview() {
         const name = document.getElementById('cust-name').value;
         const phone = document.getElementById('cust-phone').value;
-        if (!name || !phone) { alert("Please enter your Name and Phone Number first!"); return; }
+        if (!name || !phone) { alert("Please enter your Name and Phone Number!"); return; }
         
-        activeType = type;
         document.getElementById('modal-customer-info').innerHTML = `<strong>Customer:</strong> ${name}<br><strong>Phone:</strong> ${phone}`;
-        
         let listHtml = "";
         let total = 0;
         Object.keys(cart).forEach(item => {
@@ -154,37 +160,24 @@
             listHtml += `• ${item} x ${cart[item].qty} ($${cost})<br>`;
             total += cost;
         });
-        
         document.getElementById('modal-order-list').innerHTML = listHtml;
         document.getElementById('modal-total').innerText = total;
         document.getElementById('confirm-modal').style.display = 'flex';
-        
-        document.getElementById('final-confirm-btn').onclick = () => sendOrder();
     }
 
-    function closeReview() {
-        document.getElementById('confirm-modal').style.display = 'none';
-    }
+    function closeReview() { document.getElementById('confirm-modal').style.display = 'none'; }
 
     function sendOrder() {
         const name = document.getElementById('cust-name').value;
         const phone = document.getElementById('cust-phone').value;
-        let orderDetails = "";
+        let details = "";
         let total = 0;
-        Object.keys(cart).forEach(itemName => {
-            const itemTotal = cart[itemName].price * cart[itemName].qty;
-            orderDetails += `- ${itemName} x ${cart[itemName].qty} ($${itemTotal})%0A`;
-            total += itemTotal;
+        Object.keys(cart).forEach(n => {
+            details += `- ${n} x ${cart[n].qty} ($${cart[n].price * cart[n].qty})%0A`;
+            total += cart[n].price * cart[n].qty;
         });
-
-        const fullMsg = `ORDER FROM: ${name}%0AContact: ${phone}%0A%0AItems:%0A${orderDetails}%0ATOTAL: $${total}%0A%0APickup: 14 Peppertree Place.`;
-        const phoneNum = "17097309719";
-
-        if (activeType === 'whatsapp') {
-            window.open(`https://wa.me/${phoneNum}?text=${fullMsg}`, '_blank');
-        } else {
-            window.open(`sms:${phoneNum}?body=${fullMsg}`, '_blank');
-        }
+        const msg = `ORDER FROM: ${name}%0AContact: ${phone}%0A%0AItems:%0A${details}%0ATOTAL: $${total}%0A%0APickup: 14 Peppertree Place.`;
+        window.open(`https://wa.me/17097309719?text=${msg}`, '_blank');
         closeReview();
     }
 
