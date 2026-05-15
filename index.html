@@ -43,7 +43,6 @@
         }
         .menu-card:hover { transform: translateY(-3px); }
         
-        /* Revised Picture Styling to be smaller on mobile */
         .item-pic-box { width: 100%; height: 180px; background: #eee; overflow: hidden; position: relative; cursor: pointer; }
         .item-pic-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
         .item-pic-box:hover img { transform: scale(1.05); }
@@ -57,12 +56,67 @@
         .add-btn { background: var(--dark); color: var(--gold); border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; width: 100%; font-size: 0.9rem; margin-top: auto;}
         .add-btn:hover { background: var(--gold); color: var(--dark); }
 
-        /* Lightbox for large image view */
+        /* CATERING & DECORATION CARD STYLING */
+        .catering-box {
+            background: linear-gradient(135deg, #fdfbf7 0%, #fcf6e8 100%);
+            border: 2px dashed var(--gold);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+        }
+        .catering-box h3 { color: var(--dark); font-size: 1.5rem; margin-top: 0; margin-bottom: 10px; }
+        .catering-box p { color: #555; font-size: 1rem; max-width: 600px; margin: 0 auto 20px auto; line-height: 1.5; }
+        .notice-badge {
+            display: inline-block;
+            background: #fff3cd;
+            color: #856404;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border: 1px solid #ffeeba;
+        }
+        .date-picker-container {
+            margin-bottom: 20px;
+        }
+        .date-picker-container label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+        .date-picker-container input {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            outline: none;
+            text-align: center;
+        }
+        .inquiry-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);
+            transition: 0.2s;
+        }
+        .inquiry-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(37, 211, 102, 0.3); }
+
         #lightbox { display: none; position: fixed; z-index: 4000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; cursor: pointer; }
         #lightbox img { max-width: 90%; max-height: 90%; border: 3px solid var(--gold); border-radius: 8px; }
         #lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; }
 
-        /* Mobile specific layout change */
         @media (max-width: 600px) {
             .menu-list { display: flex; flex-direction: column; gap: 10px; }
             .menu-card { flex-direction: row; align-items: center; border-left: 5px solid var(--gold); border-radius: 8px;}
@@ -73,11 +127,9 @@
             .item-info strong { font-size: 1rem;}
             .item-info small { font-size: 0.8rem;}
             .add-btn { width: auto; font-size: 0.8rem; padding: 8px 12px; margin-top: 0;}
-            
-            body { padding-bottom: 280px; } /* More space for the stacked cart bar */
+            body { padding-bottom: 280px; }
         }
 
-        /* VERTICAL CART BAR (SAME AS BEFORE, with small padding tweak for stacked) */
         #cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark); color: white; padding: 15px; display: none; flex-direction: column; border-top: 5px solid var(--gold); z-index: 2000; box-shadow: 0 -10px 30px rgba(0,0,0,0.4); }
         .customer-inputs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
         .customer-inputs input { padding: 12px; border-radius: 8px; border: 1px solid #444; background: #3d3d3d; color: white; font-size: 1rem; width: 100%; box-sizing: border-box; }
@@ -88,7 +140,6 @@
         .order-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
         .order-btn { flex: 1; background: #25D366; color: white; border: none; padding: 14px; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
-        /* MODAL (SAME AS BEFORE) */
         #confirm-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; }
         .modal-content { background: white; color: var(--dark); padding: 30px; border-radius: 20px; width: 90%; max-width: 480px; box-sizing: border-box; }
     </style>
@@ -104,6 +155,19 @@
 </header>
 
 <div class="container">
+    <div class="catering-box">
+        <h3><i class="fas fa-utensils"></i> Catering & Decoration Services</h3>
+        <p>Make your special events unforgettable with our professional catering options and exquisite decoration services tailored to your needs.</p>
+        <div class="notice-badge"><i class="fas fa-exclamation-circle"></i> Notice: Please book at least 2 weeks prior to your event date</div>
+        
+        <div class="date-picker-container">
+            <label for="event-date">Select Your Event Date:</label>
+            <input type="date" id="event-date">
+        </div>
+        
+        <button class="inquiry-btn" onclick="sendCateringInquiry()"><i class="fab fa-whatsapp"></i> Send Inquiry via WhatsApp / Text</button>
+    </div>
+
     <h2 class="section-title"><i class="fas fa-bowl-rice"></i> Rice Specialties</h2>
     <div class="menu-list" id="rice-list"></div>
     <h2 class="section-title"><i class="fas fa-hotdog"></i> Snacks & Fast Food</h2>
@@ -192,9 +256,7 @@
             if (list) {
                 const div = document.createElement('div');
                 div.className = 'menu-card';
-                
                 const picUrl = item.name.replace(/ /g, '%20') + '.jpg';
-                
                 div.innerHTML = `
                     <div class="item-pic-box" onclick="enlargeImage('${picUrl}', '${item.name}')">
                         <img src="${picUrl}" alt="${item.name}" onerror="handlePicError(this)">
@@ -218,22 +280,28 @@
         placeholder.className = 'pic-placeholder';
         placeholder.innerText = 'Picture Coming soon';
         image.parentNode.appendChild(placeholder);
-        // Disable click to enlarge for placeholder
         image.parentNode.onclick = null;
         image.parentNode.style.cursor = 'default';
     }
 
-    // Lightbox functions
     function enlargeImage(src, alt) {
         document.getElementById('lightbox-img').src = src;
         document.getElementById('lightbox-img').alt = alt;
         document.getElementById('lightbox').style.display = 'flex';
     }
-    function closeLightbox() {
-        document.getElementById('lightbox').style.display = 'none';
+    function closeLightbox() { document.getElementById('lightbox').style.display = 'none'; }
+
+    // CATERING INQUIRY FUNCTION
+    function sendCateringInquiry() {
+        const selectedDate = document.getElementById('event-date').value;
+        if (!selectedDate) {
+            alert("Please select your event date first.");
+            return;
+        }
+        const msg = `Hi Nafis Foods! I would like to inquire about your Catering and Decoration services for my event on ${selectedDate}.`;
+        window.open(`https://wa.me/17097309719?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    // CART FUNCTIONS (SAME AS BEFORE)
     function addToCart(name, price) { if (cart[name]) cart[name].qty += 1; else cart[name] = { price: price, qty: 1 }; updateCart(); }
     function removeFromCart(name) { delete cart[name]; updateCart(); }
     function updateCart() {
