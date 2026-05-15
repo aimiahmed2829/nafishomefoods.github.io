@@ -82,10 +82,10 @@
         .inquiry-btn { background: #25D366; color: white; border: none; padding: 14px 28px; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); transition: 0.2s; }
         .inquiry-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(37, 211, 102, 0.3); }
 
-        /* REGULAR ORDER BANNER SEPARATOR */
+        /* REGULAR ORDER BANNER SEPARATOR WITH NEW TIME REQUIREMENTS */
         .menu-separator-banner {
             margin-top: 50px;
-            padding: 20px;
+            padding: 25px;
             background: #fdfdfd;
             border-top: 4px double var(--gold);
             border-bottom: 4px double var(--gold);
@@ -99,10 +99,32 @@
             text-transform: uppercase;
         }
         .menu-separator-banner p {
-            margin: 0;
+            margin: 0 0 15px 0;
             color: #666;
             font-size: 1rem;
             font-style: italic;
+        }
+        .time-notice-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .time-notice-tag {
+            background: #fdf6e8;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .time-notice-tag strong {
+            color: #b58d13;
         }
 
         #lightbox { display: none; position: fixed; z-index: 4000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; cursor: pointer; }
@@ -123,6 +145,8 @@
             .service-label { justify-content: flex-start; }
             .menu-separator-banner h2 { font-size: 1.4rem; }
             .menu-separator-banner p { font-size: 0.85rem; }
+            .time-notice-grid { flex-direction: column; align-items: stretch; gap: 8px; }
+            .time-notice-tag { justify-content: flex-start; font-size: 0.85rem; }
             body { padding-bottom: 280px; }
         }
 
@@ -178,7 +202,22 @@
 
     <div class="menu-separator-banner">
         <h2><i class="fas fa-clipboard-list" style="color: var(--gold);"></i> Regular Daily Menu</h2>
-        <p>Looking for a quick meal? Add items below to place your regular everyday online order instantly!</p>
+        <p>Add items below to place your regular everyday order instantly!</p>
+        
+        <div class="time-notice-grid">
+            <div class="time-notice-tag">
+                <i class="fas fa-clock" style="color:var(--gold);"></i> 
+                <span>Small Orders: <strong>2 - 3 Hrs</strong> prep time</span>
+            </div>
+            <div class="time-notice-tag">
+                <i class="fas fa-hourglass-half" style="color:var(--gold);"></i> 
+                <span>Big Orders: <strong>4 - 5 Hrs</strong> prep time</span>
+            </div>
+            <div class="time-notice-tag">
+                <i class="fas fa-moon" style="color:var(--gold);"></i> 
+                <span>Breakfast Items: Order <strong>the night before</strong></span>
+            </div>
+        </div>
     </div>
 
     <h2 class="section-title"><i class="fas fa-bowl-rice"></i> Rice Specialties</h2>
