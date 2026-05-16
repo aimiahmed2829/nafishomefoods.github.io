@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --gold: #D4AF37; --dark: #2c2c2c; --white: #ffffff; --light: #f4f4f4; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; color: var(--dark); padding-bottom: 260px; background-color: #fff; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; color: var(--dark); padding-bottom: 290px; background-color: #fff; }
         
         .hero { 
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070&auto=format&fit=crop'); 
@@ -172,13 +172,14 @@
             .menu-separator-banner p { font-size: 0.85rem; }
             .time-notice-grid { flex-direction: column; align-items: stretch; gap: 6px; }
             .time-notice-tag { justify-content: flex-start; font-size: 0.8rem; }
-            body { padding-bottom: 280px; }
+            body { padding-bottom: 310px; }
         }
 
         #cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark); color: white; padding: 15px; display: none; flex-direction: column; border-top: 5px solid var(--gold); z-index: 2000; box-shadow: 0 -10px 30px rgba(0,0,0,0.4); }
         .customer-inputs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-        .customer-inputs input { padding: 12px; border-radius: 8px; border: 1px solid #444; background: #3d3d3d; color: white; font-size: 1rem; width: 100%; box-sizing: border-box; }
+        .customer-inputs input, .customer-inputs select { padding: 12px; border-radius: 8px; border: 1px solid #444; background: #3d3d3d; color: white; font-size: 1rem; width: 100%; box-sizing: border-box; outline: none; }
         .customer-inputs input::placeholder { color: #bbb; }
+        .customer-inputs select option { background: var(--dark); color: white; }
         .cart-items-preview { margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 8px; max-height: 70px; overflow-y: auto; }
         .cart-tag { background: rgba(212, 175, 55, 0.15); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--gold); display: flex; align-items: center; gap: 8px; font-size: 0.8rem; }
         .remove-btn { color: #ff6b6b; cursor: pointer; border: none; background: none; font-weight: bold; font-size: 1.2rem; }
@@ -271,6 +272,12 @@
     <div class="customer-inputs">
         <input type="text" id="cust-name" placeholder="Enter Your Full Name">
         <input type="tel" id="cust-phone" placeholder="Enter Your Phone Number">
+        <select id="cust-spice">
+            <option value="" disabled selected>🌶️ Select Spice Level Preference</option>
+            <option value="Mild">Mild (Low Heat)</option>
+            <option value="Medium">Medium (Balanced House Style)</option>
+            <option value="Spicy">Spicy (Authentic Kick)</option>
+        </select>
     </div>
     <div class="cart-items-preview" id="cart-preview"></div>
     <div class="order-row">
@@ -313,7 +320,7 @@
         { name: "Chicken Pulao", price: 13, cat: "rice", note: "Per Serving", desc: "Mildly spiced rice cooked slowly in a rich chicken broth. Serving size: 1 pack per person (Includes 2 pcs of chicken)." },
         { name: "Mutton Qabli Pulao", price: 25, cat: "rice", note: "Per Serving", desc: "Authentic Afghan style rice topped with julienne carrots, raisins, and tender mutton chunks. Serving size: 1 pack per person." },
         { name: "Chicken Qabli Pulao", price: 17, cat: "rice", note: "Per Serving", desc: "Aromatic Afghan rice with sweet fried carrots and raisins. Serving size: 1 pack per person (Includes 2 pcs of chicken)." },
-        { name: "Boiled Rice", price: 5, cat: "rice", note: "Per Plate", desc: "Fluffy, premium long-grain steamed white basmati rice. Serving size: 1 pack container per person." },
+        { name: "Boiled Rice", price: 5, cat: "rice", note: "Per Serving", desc: "Fluffy, premium long-grain steamed white basmati rice. Serving size: 1 pack container per person." },
         { name: "Tarke Wale Chawal", price: 6, cat: "rice", note: "Per Plate", desc: "Flavorful basmati rice tempered with a traditional tadka of onions and cumin. Serving size: 1 pack container per person." },
         { name: "Samosa (1 pc)", price: 3, cat: "snacks", note: "$3 ea / 4 for $10", desc: "Crispy golden triangular pastry wrapper filled with a savory, perfectly spiced potato mash." },
         { name: "Samosa (4 pcs)", price: 10, cat: "snacks", note: "Bundle Price", desc: "A bundle pack of 4 crispy golden samosas. Great for sharing!" },
@@ -434,16 +441,20 @@
     function buildRawTextOrder() {
         const name = document.getElementById('cust-name').value;
         const phone = document.getElementById('cust-phone').value;
+        const spice = document.getElementById('cust-spice').value || "Not Specified";
         let details = ""; let total = 0;
         Object.keys(cart).forEach(n => { details += `- ${n} x ${cart[n].qty} ($${cart[n].price * cart[n].qty})\n`; total += cart[n].price * cart[n].qty; });
-        return `ORDER FROM NAFIS FOODS\nName: ${name}\nContact: ${phone}\n\nItems Ordered:\n${details}\nTOTAL PRICE: $${total}\n\nPayment via E-transfer: omershahzadahmed22@gmail.com\nPickup Location: 14 Peppertree Place.`;
+        return `ORDER FROM NAFIS FOODS\nName: ${name}\nContact: ${phone}\nSpice Level: ${spice}\n\nItems Ordered:\n${details}\nTOTAL PRICE: $${total}\n\nPayment via E-transfer: omershahzadahmed22@gmail.com\nPickup Location: 14 Peppertree Place.`;
     }
 
     function showReview() {
         const name = document.getElementById('cust-name').value;
         const phone = document.getElementById('cust-phone').value;
+        const spice = document.getElementById('cust-spice').value;
         if (!name || !phone) { alert("Please enter your name and number first."); return; }
-        document.getElementById('modal-info').innerHTML = `<strong>${name}</strong><br>${phone}`;
+        if (!spice) { alert("Please select a spice level preference before continuing."); return; }
+        
+        document.getElementById('modal-info').innerHTML = `<strong>${name}</strong><br>${phone}<br><span style="color:#e44d26; font-weight:bold;">🌶️ Spice: ${spice}</span>`;
         let listHtml = ""; let total = 0;
         Object.keys(cart).forEach(item => { const cost = cart[item].price * cart[item].qty; listHtml += `• ${item} x ${cart[item].qty} ($${cost})<br>`; total += cost; });
         document.getElementById('modal-items').innerHTML = listHtml;
@@ -456,9 +467,10 @@
     function submitViaWhatsApp() {
         const name = document.getElementById('cust-name').value;
         const phone = document.getElementById('cust-phone').value;
+        const spice = document.getElementById('cust-spice').value || "Not Specified";
         let details = ""; let total = 0;
         Object.keys(cart).forEach(n => { details += `- ${n} x ${cart[n].qty} ($${cart[n].price * cart[n].qty})%0A`; total += cart[n].price * cart[n].qty; });
-        const msg = `ORDER FROM NAFIS FOODS: ${name}%0AContact: ${phone}%0A%0AItems:%0A${details}%0ATOTAL: $${total}%0A%0APayment via E-transfer to omershahzadahmed22@gmail.com%0A%0APickup: 14 Peppertree Place.`;
+        const msg = `ORDER FROM NAFIS FOODS: ${name}%0AContact: ${phone}%0ASpice Level: ${spice}%0A%0AItems:%0A${details}%0ATOTAL: $${total}%0A%0APayment via E-transfer to omershahzadahmed22@gmail.com%0A%0APickup: 14 Peppertree Place.`;
         window.open(`https://wa.me/17097309719?text=${msg}`, '_blank');
         closeReview();
     }
