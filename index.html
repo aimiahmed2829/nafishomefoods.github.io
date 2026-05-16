@@ -296,6 +296,69 @@
     <img id="lightbox-img" src="" alt="Enlarged Food Picture">
 </div>
 
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC0Ugl8OiCZwWKr2PkgztZKALdEz-gmLSY",
+        authDomain: "nafis-foods.firebaseapp.com",
+        projectId: "nafis-foods",
+        storageBucket: "nafis-foods.firebasestorage.app",
+        messagingSenderId: "856645833481",
+        appId: "1:856645833481:web:f18f1d582b280d083239d8"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.syncOrderToSellerDashboard = function() {
+        const name = document.getElementById('cust-name').value.trim();
+        const phone = document.getElementById('cust-phone').value.trim();
+        const spice = document.getElementById('cust-spice').value;
+        const newOrderId = Date.now().toString().slice(-4);
+        const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        const orderPayload = {
+            id: newOrderId,
+            name: name,
+            phone: phone,
+            spice: spice,
+            items: cart,
+            proofImage: proofBase64,
+            status: 'pending',
+            time: timeString
+        };
+
+        const newOrderRef = push(ref(db, 'orders'));
+        set(newOrderRef, orderPayload);
+    };
+
+    window.submitReviewData = function() {
+        const name = document.getElementById('feed-name').value.trim();
+        const comment = document.getElementById('feed-comment').value.trim();
+
+        if (selectedStarRating === 0) { alert("Please select a star rating first."); return; }
+        if (!name || !comment) { alert("Please fill out both your name and review text."); return; }
+
+        const reviewPayload = {
+            name: name,
+            stars: selectedStarRating,
+            comment: comment,
+            timestamp: Date.now()
+        };
+
+        const newReviewRef = push(ref(db, 'reviews'));
+        set(newReviewRef, reviewPayload).then(() => {
+            alert("Thank you! Your feedback has been sent directly to our dashboard panel.");
+            document.getElementById('feed-name').value = "";
+            document.getElementById('feed-comment').value = "";
+            document.querySelectorAll('#stars-row-box i').forEach(s => s.classList.remove('selected'));
+            selectedStarRating = 0;
+        });
+    };
+</script>
+
 <script>
     const menu = [
         { name: "Biryani", price: 17, cat: "rice", note: "Per Serving", desc: "Fragrant, layered basmati rice with traditional aromatic spices. Serving size: 1 pack per person (Includes 2 pcs of chicken)." },
@@ -333,10 +396,6 @@
     let cart = {};
     let proofBase64 = "";
     let selectedStarRating = 0;
-
-    // LOCAL DUAL INTERFACE SYNC REGISTRY
-    const STORAGE_KEY_ORDERS = "nafisfoods_orders_db";
-    const STORAGE_KEY_FEEDBACK = "nafisfoods_feedback_db";
 
     function renderMenu() {
         menu.forEach(item => {
@@ -399,7 +458,6 @@
         }
     }
 
-    // STAR RATING EVENT LISTENERS
     document.querySelectorAll('#stars-row-box i').forEach(star => {
         star.addEventListener('click', function() {
             selectedStarRating = parseInt(this.getAttribute('data-rating'));
@@ -408,48 +466,6 @@
             });
         });
     });
-
-    function submitReviewData() {
-        const name = document.getElementById('feed-name').value.trim();
-        const comment = document.getElementById('feed-comment').value.trim();
-
-        if (selectedStarRating === 0) { alert("Please select a star rating first."); return; }
-        if (!name || !comment) { alert("Please fill out both your name and review text."); return; }
-
-        let reviewsList = JSON.parse(localStorage.getItem(STORAGE_KEY_FEEDBACK)) || [];
-        reviewsList.unshift({ name: name, stars: selectedStarRating, comment: comment });
-        localStorage.setItem(STORAGE_KEY_FEEDBACK, JSON.stringify(reviewsList));
-
-        alert("Thank you! Your feedback has been sent directly to the seller's hub.");
-        document.getElementById('feed-name').value = "";
-        document.getElementById('feed-comment').value = "";
-        document.querySelectorAll('#stars-row-box i').forEach(s => s.classList.remove('selected'));
-        selectedStarRating = 0;
-    }
-
-    function syncOrderToSellerDashboard() {
-        const name = document.getElementById('cust-name').value.trim();
-        const phone = document.getElementById('cust-phone').value.trim();
-        const spice = document.getElementById('cust-spice').value;
-        
-        let ordersList = JSON.parse(localStorage.getItem(STORAGE_KEY_ORDERS)) || [];
-        const newOrderId = Date.now().toString().slice(-4);
-        const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-        const payload = {
-            id: newOrderId,
-            name: name,
-            phone: phone,
-            spice: spice,
-            items: cart,
-            proofImage: proofBase64,
-            status: 'pending',
-            time: timeString
-        };
-
-        ordersList.push(payload);
-        localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(ordersList));
-    }
 
     function addToCart(name, price) { if (cart[name]) cart[name].qty += 1; else cart[name] = { price: price, qty: 1 }; updateCart(); }
     function removeFromCart(name) { delete cart[name]; updateCart(); }
