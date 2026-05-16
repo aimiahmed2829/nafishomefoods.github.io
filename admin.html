@@ -40,7 +40,6 @@
 
         .order-items-box { background: var(--light); padding: 10px; border-radius: 6px; font-size: 0.88rem; margin-bottom: 12px; line-height: 1.5; }
         .proof-link-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #0056b3; text-decoration: none; font-weight: bold; margin-bottom: 12px; cursor: pointer; }
-        .proof-link-btn:hover { text-decoration: underline; }
 
         .card-actions { display: flex; gap: 8px; }
         .action-btn { flex: 1; border: none; padding: 8px; font-size: 0.82rem; font-weight: bold; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; }
@@ -48,7 +47,6 @@
         .btn-complete { background: #28a745; color: white; } .btn-complete:hover { background: #1e7e34; }
         .btn-delete { background: #fff; color: #dc3545; border: 1px solid #dc3545; } .btn-delete:hover { background: #dc3545; color: white; }
 
-        /* SIDEBAR FEEDBACK HUB */
         .feedback-column { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 15px; border-top: 4px solid var(--gold); }
         .feedback-column h2 { font-size: 1.2rem; margin-top: 0; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; color: #333; }
         .feedback-list { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; max-height: 650px; overflow-y: auto; }
@@ -57,7 +55,6 @@
         .feedback-user { font-size: 0.85rem; font-weight: bold; color: #555; }
         .feedback-text { font-size: 0.85rem; color: #666; margin: 4px 0 0 0; line-height: 1.4; font-style: italic; }
 
-        /* LIGHTBOX FOR SCREENSHOTS */
         #img-lightbox { display: none; position: fixed; z-index: 5000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; }
         #img-lightbox img { max-width: 90%; max-height: 85vh; border: 4px solid white; border-radius: 8px; background: white; }
         #lightbox-close-btn { position: absolute; top: 20px; right: 30px; color: white; font-size: 35px; font-weight: bold; cursor: pointer; }
@@ -65,7 +62,6 @@
         @media (max-width: 1024px) {
             .dashboard-container { grid-template-columns: 1fr; }
             .pipeline-columns { grid-template-columns: 1fr; }
-            .column-box { min-height: auto; }
         }
     </style>
 </head>
@@ -73,7 +69,7 @@
 
 <header>
     <h1><i class="fas fa-utensils"></i> Nafis Foods | Seller Dashboard</h1>
-    <div class="refresh-indicator"><i class="fas fa-sync-alt fa-spin"></i> Live System Active</div>
+    <div class="refresh-indicator"><i class="fas fa-sync-alt fa-spin"></i> Connected to Cloud</div>
 </header>
 
 <div class="dashboard-container">
@@ -82,12 +78,10 @@
             <div class="column-header">New Pending <span class="badge" id="count-pending">0</span></div>
             <div class="orders-list" id="list-pending"></div>
         </div>
-
         <div class="column-box col-preparing">
             <div class="column-header">Cooking / Kitchen <span class="badge" id="count-preparing">0</span></div>
             <div class="orders-list" id="list-preparing"></div>
         </div>
-
         <div class="column-box col-ready">
             <div class="column-header">Ready for Pickup <span class="badge" id="count-ready">0</span></div>
             <div class="orders-list" id="list-ready"></div>
@@ -104,17 +98,16 @@
 
 <div id="img-lightbox" onclick="closeImageLightbox()">
     <span id="lightbox-close-btn">&times;</span>
-    <img id="lightbox-main-target" src="" alt="Payment screenshot display">
+    <img id="lightbox-main-target" src="" alt="Payment screenshot">
 </div>
 
 <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-600.wav" preload="auto"></audio>
 
 <script type="module">
-    // Initialize standard mock secure structures for browser fallback database
-    const STORAGE_KEY_ORDERS = "nafisfoods_orders_db";
-    const STORAGE_KEY_FEEDBACK = "nafisfoods_feedback_db";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // 🔒 ACCESS CONTROL CHECK (Default pin: 1234)
+    // 🔒 ACCESS CONTROL CHECK (PIN: 1234)
     const accessPin = prompt("Enter Seller Access Security PIN:");
     if (accessPin === "1234") {
         document.body.style.display = "block";
@@ -123,9 +116,21 @@
         window.location.href = "index.html";
     }
 
-    let localOrdersCache = JSON.parse(localStorage.getItem(STORAGE_KEY_ORDERS)) || [];
-    let localFeedbackCache = JSON.parse(localStorage.getItem(STORAGE_KEY_FEEDBACK)) || [];
-    let basicOrderTrackerCount = localOrdersCache.length;
+    // CLOUD DATABASE CONFIGURATION
+    const firebaseConfig = {
+      apiKey: "AIzaSyC0Ugl8OiCZwWKr2PkgztZKALdEz-gmLSY",
+      authDomain: "nafis-foods.firebaseapp.com",
+      projectId: "nafis-foods",
+      storageBucket: "nafis-foods.firebasestorage.app",
+      messagingSenderId: "856645833481",
+      appId: "1:856645833481:web:f18f1d582b280d083239d8",
+      databaseURL: "https://nafis-foods-default-rtdb.firebaseio.com/"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let isFirstLoad = true;
 
     window.viewProof = function(base64Data) {
         if (!base64Data) return;
@@ -137,77 +142,59 @@
         document.getElementById('img-lightbox').style.display = 'none';
     };
 
-    window.changeStatus = function(orderId, currentStatus) {
-        let targetIndex = localOrdersCache.findIndex(o => o.id == orderId);
-        if (targetIndex === -1) return;
-
-        if (currentStatus === 'pending') {
-            localOrdersCache[targetIndex].status = 'preparing';
-        } else if (currentStatus === 'preparing') {
-            localOrdersCache[targetIndex].status = 'ready';
-        } else if (currentStatus === 'ready') {
-            localOrdersCache[targetIndex].status = 'completed'; // Hidden from board layout pipeline
-        }
-        
-        saveAndRenderPipeline();
+    window.changeStatus = function(orderId, nextStatus) {
+        update(ref(db, 'orders/' + orderId), { status: nextStatus });
     };
 
     window.cancelOrder = function(orderId) {
-        if(confirm("Are you sure you want to completely clear this order card from your workspace?")) {
-            localOrdersCache = localOrdersCache.filter(o => o.id != orderId);
-            saveAndRenderPipeline();
+        if(confirm("Are you sure you want to completely clear this order card?")) {
+            remove(ref(db, 'orders/' + orderId));
         }
     };
 
-    function saveAndRenderPipeline() {
-        localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(localOrdersCache));
-        
+    // LIVE STREAM SYNC SYSTEM WATCHER FOR INCOMING ORDERS
+    onValue(ref(db, 'orders'), (snapshot) => {
+        const data = snapshot.val() || {};
         const pendBox = document.getElementById('list-pending');
         const prepBox = document.getElementById('list-preparing');
         const rdyBox = document.getElementById('list-ready');
 
-        pendBox.innerHTML = "";
-        prepBox.innerHTML = "";
-        rdyBox.innerHTML = "";
-
+        pendBox.innerHTML = ""; prepBox.innerHTML = ""; rdyBox.innerHTML = "";
         let cPend = 0, cPrep = 0, cRdy = 0;
+        let hasNewOrder = false;
 
-        localOrdersCache.forEach(order => {
+        Object.keys(data).forEach(id => {
+            const order = data[id];
             if (order.status === 'completed') return;
 
             const card = document.createElement('div');
             card.className = 'order-card';
 
             let itemLines = "";
-            Object.keys(order.items).forEach(k => {
+            Object.keys(order.items || {}).forEach(k => {
                 itemLines += `• ${k} x ${order.items[k].qty}<br>`;
             });
 
-            let proofBtnHtml = "";
-            if (order.proofImage) {
-                proofBtnHtml = `<div class="proof-link-btn" onclick="viewProof('${order.proofImage}')"><i class="fas fa-file-invoice-dollar"></i> View E-Transfer Screenshot</div>`;
-            }
-
+            let proofBtnHtml = order.proofImage ? `<div class="proof-link-btn" onclick="viewProof('${order.proofImage}')"><i class="fas fa-file-invoice-dollar"></i> View E-Transfer Screenshot</div>` : "";
             let actionBtnHtml = "";
+
             if (order.status === 'pending') {
                 cPend++;
-                actionBtnHtml = `<button class="action-btn btn-next" onclick="changeStatus('${order.id}', 'pending')"><i class="fas fa-fire"></i> Accept & Cook</button>`;
+                if (isFirstLoad === false) hasNewOrder = true;
+                actionBtnHtml = `<button class="action-btn btn-next" onclick="changeStatus('${id}', 'preparing')"><i class="fas fa-fire"></i> Accept & Cook</button>`;
                 pendBox.appendChild(card);
             } else if (order.status === 'preparing') {
                 cPrep++;
-                actionBtnHtml = `<button class="action-btn btn-next" onclick="changeStatus('${order.id}', 'preparing')"><i class="fas fa-check"></i> Packaged & Ready</button>`;
+                actionBtnHtml = `<button class="action-btn btn-next" onclick="changeStatus('${id}', 'ready')"><i class="fas fa-check"></i> Packaged & Ready</button>`;
                 prepBox.appendChild(card);
             } else if (order.status === 'ready') {
                 cRdy++;
-                actionBtnHtml = `<button class="action-btn btn-complete" onclick="changeStatus('${order.id}', 'ready')"><i class="fas fa-archive"></i> Archive Order</button>`;
+                actionBtnHtml = `<button class="action-btn btn-complete" onclick="changeStatus('${id}', 'completed')"><i class="fas fa-archive"></i> Archive Order</button>`;
                 rdyBox.appendChild(card);
             }
 
             card.innerHTML = `
-                <div class="order-meta">
-                    <span>ID: #${order.id}</span>
-                    <span>${order.time || 'Today'}</span>
-                </div>
+                <div class="order-meta"><span>ID: #${order.id}</span><span>${order.time || 'Today'}</span></div>
                 <h3 class="order-cust-name">${order.name}</h3>
                 <div style="font-size:0.82rem; color:#666; margin-bottom:5px;"><i class="fas fa-phone"></i> ${order.phone}</div>
                 <div class="order-spice-badge spice-${order.spice}">🌶️ Spice: ${order.spice}</div>
@@ -215,21 +202,32 @@
                 ${proofBtnHtml}
                 <div class="card-actions">
                     ${actionBtnHtml}
-                    <button class="action-btn btn-delete" onclick="cancelOrder('${order.id}')" title="Delete Order"><i class="fas fa-trash-alt"></i></button>
+                    <button class="action-btn btn-delete" onclick="cancelOrder('${id}')"><i class="fas fa-trash-alt"></i></button>
                 </div>
             `;
         });
 
+        if (hasNewOrder) { try { document.getElementById('alert-sound').play(); } catch(e){} }
+        isFirstLoad = false;
+
         document.getElementById('count-pending').innerText = cPend;
         document.getElementById('count-preparing').innerText = cPrep;
         document.getElementById('count-ready').innerText = cRdy;
-    }
+    });
 
-    function renderFeedbackHub() {
+    // LIVE STREAM SYNC SYSTEM WATCHER FOR FEEDBACK REVIEWS
+    onValue(ref(db, 'reviews'), (snapshot) => {
+        const data = snapshot.val() || {};
         const hub = document.getElementById('global-feedback-box');
-        if (localFeedbackCache.length === 0) return;
         
-        hub.innerHTML = localFeedbackCache.map(f => {
+        const reviewKeys = Object.keys(data).reverse();
+        if (reviewKeys.length === 0) {
+            hub.innerHTML = `<div style="text-align:center; color:#999; font-size:0.85rem; padding:20px;">No incoming reviews yet.</div>`;
+            return;
+        }
+
+        hub.innerHTML = reviewKeys.map(id => {
+            const f = data[id];
             let stars = "★".repeat(f.stars) + "☆".repeat(5 - f.stars);
             return `
                 <div class="feedback-item">
@@ -239,30 +237,7 @@
                 </div>
             `;
         }).join('');
-    }
-
-    // Dynamic long polling watcher interval system to fetch customer sync updates across standard storage cycles
-    setInterval(() => {
-        const freshOrders = JSON.parse(localStorage.getItem(STORAGE_KEY_ORDERS)) || [];
-        const freshFeedback = JSON.parse(localStorage.getItem(STORAGE_KEY_FEEDBACK)) || [];
-
-        if (freshOrders.length > basicOrderTrackerCount) {
-            try {
-                document.getElementById('alert-sound').play();
-            } catch(e){}
-            basicOrderTrackerCount = freshOrders.length;
-            localOrdersCache = freshOrders;
-            saveAndRenderPipeline();
-        }
-        
-        if (freshFeedback.length !== localFeedbackCache.length) {
-            localFeedbackCache = freshFeedback;
-            renderFeedbackHub();
-        }
-    }, 2500);
-
-    saveAndRenderPipeline();
-    renderFeedbackHub();
+    });
 </script>
 </body>
 </html>
