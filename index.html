@@ -117,7 +117,6 @@
         #lightbox img { max-width: 90%; max-height: 90%; border: 3px solid var(--gold); border-radius: 8px; }
         #lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; }
 
-        /* REVIEWS FORM BOX STYLING */
         .feedback-form-box { background: #fffdf9; border: 2px solid var(--gold); border-radius: 15px; padding: 25px; margin: 50px auto 20px auto; max-width: 600px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); text-align: center; }
         .feedback-form-box h3 { color: var(--dark); margin-top: 0; font-size: 1.3rem; letter-spacing: 0.5px; }
         .star-rating-row { display: flex; justify-content: center; gap: 10px; margin: 15px 0; font-size: 2rem; color: #ccc; }
@@ -127,6 +126,17 @@
         .feedback-form-box textarea { resize: none; height: 80px; }
         .feedback-submit-btn { background: var(--dark); color: var(--gold); border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
         .feedback-submit-btn:hover { background: var(--gold); color: var(--dark); }
+
+        /* REAL-TIME TRACKING OVERLAY SCREEN */
+        #tracking-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; text-align: center; }
+        .tracking-box-card { background: #fafafa; border: 1px solid #eee; border-radius: 20px; padding: 30px; max-width: 450px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .status-node { display: flex; align-items: center; gap: 15px; margin: 25px 0; opacity: 0.3; transition: 0.3s; font-size: 1.1rem; font-weight: bold; text-align: left; }
+        .status-node i { font-size: 1.5rem; width: 30px; text-align: center; }
+        .status-node.active { opacity: 1; color: var(--gold); transform: scale(1.05); }
+        .status-node.active i { color: #28a745; }
+        .status-node.active.cancelled-node i { color: #dc3545; }
+        .status-node.active.cancelled-node { color: #dc3545; }
+        .close-track-btn { background: var(--dark); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; margin-top: 15px; display: none; }
 
         @media (max-width: 600px) {
             .menu-list { display: flex; flex-direction: column; gap: 12px; }
@@ -164,8 +174,9 @@
         #proof-preview-img { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
 
         .action-options-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        .action-choice-btn { border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; color: white; text-decoration: none;}
-        .btn-whatsapp { background: #25D366; } .btn-sms { background: #007bff; } .btn-messenger { background: #006AFF; } .btn-copy { background: #6c757d; } .btn-cancel { background: #f1f1f1; color: #333; margin-top: 5px; }
+        .submit-direct-btn { background: #28a745; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 10px rgba(40,167,69,0.2); }
+        .submit-direct-btn:hover { background: #218838; }
+        .btn-cancel { background: #f1f1f1; color: #333; margin-top: 5px; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -233,6 +244,28 @@
     </div>
 </div>
 
+<div id="tracking-screen">
+    <div class="tracking-box-card">
+        <h2 style="color: var(--gold); margin-top: 0; letter-spacing: 1px;">LIVE ORDER TRACKING</h2>
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 25px;">Order ID: <strong id="track-order-id">#----</strong></p>
+        
+        <div class="status-node" id="node-pending">
+            <i class="fas fa-clock"></i> <span>Order Submitted (Pending Review)</span>
+        </div>
+        <div class="status-node" id="node-preparing">
+            <i class="fas fa-fire"></i> <span>Kitchen Cooking Your Food</span>
+        </div>
+        <div class="status-node" id="node-ready">
+            <i class="fas fa-shopping-bag"></i> <span>Ready for Pickup! 🚀</span>
+        </div>
+        <div class="status-node cancelled-node" id="node-cancelled">
+            <i class="fas fa-times-circle"></i> <span>Order Cancelled / Rejected</span>
+        </div>
+
+        <button class="close-track-btn" id="close-track-btn" onclick="exitTrackingScreen()">Back to Menu</button>
+    </div>
+</div>
+
 <div id="cart-bar">
     <div class="customer-inputs">
         <input type="text" id="cust-name" placeholder="Enter Your Full Name">
@@ -256,7 +289,7 @@
         <h2 style="color:var(--gold); margin-top:0; font-size:1.5rem; text-transform:uppercase; text-align:center;">Review Your Order</h2>
         
         <div id="response-time-warning">
-            <strong><i class="fas fa-bell"></i> Notice:</strong> You are ordering outside our normal response hours (9:00 AM - 10:00 PM). We will review and confirm your order as soon as we are back online!
+            <strong><i class="fas fa-bell"></i> Notice:</strong> You are ordering outside our normal response hours (9:00 AM - 10:00 PM).
         </div>
 
         <div id="modal-info" style="margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; text-align:center;"></div>
@@ -282,23 +315,20 @@
         <div style="font-size:1.3rem; margin-bottom:15px; text-align:center;"><strong>Total: $<span id="modal-total">0</span></strong></div>
         
         <div class="action-options-grid">
-            <button class="action-choice-btn btn-whatsapp" onclick="submitViaWhatsApp()"><i class="fab fa-whatsapp"></i> Send via WhatsApp</button>
-            <button class="action-choice-btn btn-sms" onclick="submitViaSMS()"><i class="fas fa-comment-alt"></i> Send via Text Message (SMS)</button>
-            <button class="action-choice-btn btn-messenger" onclick="submitViaMessenger()"><i class="fab fa-facebook-messenger"></i> Send via FB Messenger</button>
-            <button class="action-choice-btn btn-copy" onclick="copyOrderDetails()"><i class="fas fa-copy"></i> Copy Order Details Only</button>
-            <button class="action-choice-btn btn-cancel" onclick="closeReview()">← Go Back & Edit</button>
+            <button class="submit-direct-btn" onclick="submitDirectOrder()"><i class="fas fa-paper-plane"></i> Place Order Instantly</button>
+            <button class="btn-cancel" onclick="closeReview()">← Go Back & Edit</button>
         </div>
     </div>
 </div>
 
 <div id="lightbox" onclick="closeLightbox()">
     <span id="lightbox-close">&times;</span>
-    <img id="lightbox-img" src="" alt="Enlarged Food Picture">
+    <img id="lightbox-img" src="" alt="Enlarged Picture">
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyC0Ugl8OiCZwWKr2PkgztZKALdEz-gmLSY",
@@ -312,7 +342,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    window.syncOrderToSellerDashboard = function() {
+    window.submitDirectOrder = function() {
         const name = document.getElementById('cust-name').value.trim();
         const phone = document.getElementById('cust-phone').value.trim();
         const spice = document.getElementById('cust-spice').value;
@@ -331,8 +361,52 @@
         };
 
         const newOrderRef = push(ref(db, 'orders'));
-        set(newOrderRef, orderPayload);
+        const dynamicDatabaseKey = newOrderRef.key;
+
+        set(newOrderRef, orderPayload).then(() => {
+            closeReview();
+            document.getElementById('cart-bar').style.display = 'none';
+            document.getElementById('track-order-id').innerText = `#${newOrderId}`;
+            document.getElementById('tracking-screen').style.display = 'flex';
+            
+            // Start listening for status revisions from the kitchen admin dashboard live
+            listenToOrderStatusLive(dynamicDatabaseKey);
+        });
     };
+
+    function listenToOrderStatusLive(dbKey) {
+        onValue(ref(db, 'orders/' + dbKey), (snapshot) => {
+            const orderData = snapshot.val();
+            
+            // If order card gets deleted by seller from admin panel, consider it cancelled
+            if (!orderData) {
+                updateTrackingUI('cancelled');
+                return;
+            }
+
+            updateTrackingUI(orderData.status);
+        });
+    }
+
+    function updateTrackingUI(status) {
+        document.querySelectorAll('.status-node').forEach(node => node.classList.remove('active'));
+        document.getElementById('close-track-btn').style.display = 'none';
+
+        if (status === 'pending') {
+            document.getElementById('node-pending').classList.add('active');
+        } else if (status === 'preparing') {
+            document.getElementById('node-preparing').classList.add('active');
+        } else if (status === 'ready') {
+            document.getElementById('node-ready').classList.add('active');
+            document.getElementById('close-track-btn').style.display = 'block';
+        } else if (status === 'completed') {
+            document.getElementById('node-ready').classList.add('active');
+            document.getElementById('close-track-btn').style.display = 'block';
+        } else if (status === 'cancelled') {
+            document.getElementById('node-cancelled').classList.add('active');
+            document.getElementById('close-track-btn').style.display = 'block';
+        }
+    }
 
     window.submitReviewData = function() {
         const name = document.getElementById('feed-name').value.trim();
@@ -348,8 +422,7 @@
             timestamp: Date.now()
         };
 
-        const newReviewRef = push(ref(db, 'reviews'));
-        set(newReviewRef, reviewPayload).then(() => {
+        push(ref(db, 'reviews'), reviewPayload).then(() => {
             alert("Thank you! Your feedback has been sent directly to our dashboard panel.");
             document.getElementById('feed-name').value = "";
             document.getElementById('feed-comment').value = "";
@@ -442,17 +515,13 @@
     function closeLightbox() { document.getElementById('lightbox').style.display = 'none'; }
 
     function handleFileSelect(input) {
-        const container = document.getElementById('proof-preview-container');
-        const previewImg = document.getElementById('proof-preview-img');
-        const btnText = document.getElementById('upload-btn-text');
-        
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 proofBase64 = e.target.result;
-                previewImg.src = proofBase64;
-                container.style.display = 'flex';
-                btnText.innerHTML = `<i class="fas fa-exchange-alt"></i> Change Screenshot`;
+                document.getElementById('proof-preview-img').src = proofBase64;
+                document.getElementById('proof-preview-container').style.display = 'flex';
+                document.getElementById('upload-btn-text').innerHTML = `<i class="fas fa-exchange-alt"></i> Change Screenshot`;
             }
             reader.readAsDataURL(input.files[0]);
         }
@@ -481,15 +550,6 @@
             totalDisp.innerText = total;
         } else bar.style.display = 'none';
     }
-    
-    function buildRawTextOrder() {
-        const name = document.getElementById('cust-name').value;
-        const phone = document.getElementById('cust-phone').value;
-        const spice = document.getElementById('cust-spice').value || "Not Specified";
-        let details = ""; let total = 0;
-        Object.keys(cart).forEach(n => { details += `- ${n} x ${cart[n].qty} ($${cart[n].price * cart[n].qty})\n`; total += cart[n].price * cart[n].qty; });
-        return `ORDER FROM NAFIS FOODS\nName: ${name}\nContact: ${phone}\nSpice Level: ${spice}\n\nItems Ordered:\n${details}\nTOTAL PRICE: $${total}\n\nPayment via E-transfer: omershahzadahmed22@gmail.com\nPickup Location: 14 Peppertree Place.`;
-    }
 
     function showReview() {
         const name = document.getElementById('cust-name').value.trim();
@@ -506,54 +566,14 @@
 
         document.getElementById('modal-info').innerHTML = `<strong>${name}</strong><br>${phone}<br><span style="color:#e44d26; font-weight:bold;">🌶️ Spice: ${spice}</span>`;
         let listHtml = ""; let total = 0;
-        Object.keys(cart).forEach(item => { const cost = cart[item].price * cart[item].qty; listHtml += `• ${item} x ${cart[item].qty} ($${cost})<br>`; total += cost; });
+        Object.keys(cart).forEach(item => { const cost = cart[item].price * cart[item].qty; listHtml += `• ${item} x ${cart[item].qty} ($${cost})br>`; total += cost; });
         document.getElementById('modal-items').innerHTML = listHtml;
         document.getElementById('modal-total').innerText = total;
         document.getElementById('confirm-modal').style.display = 'flex';
     }
     
     function closeReview() { document.getElementById('confirm-modal').style.display = 'none'; }
-    
-    function checkAndNotifyProof() {
-        if (proofBase64) alert("Order text copied!\n\nRemember to paste the text AND select your payment screenshot from your photo library to send it together.");
-    }
-
-    function submitViaWhatsApp() {
-        syncOrderToSellerDashboard();
-        checkAndNotifyProof();
-        const name = document.getElementById('cust-name').value;
-        const phone = document.getElementById('cust-phone').value;
-        const spice = document.getElementById('cust-spice').value || "Not Specified";
-        let details = ""; let total = 0;
-        Object.keys(cart).forEach(n => { details += `- ${n} x ${cart[n].qty} ($${cart[n].price * cart[n].qty})%0A`; total += cart[n].price * cart[n].qty; });
-        let msg = `ORDER FROM NAFIS FOODS: ${name}%0AContact: ${phone}%0ASpice Level: ${spice}%0A%0AItems:%0A${details}%0ATOTAL: $${total}%0A%0APayment via E-transfer to omershahzadahmed22@gmail.com%0A%0APickup: 14 Peppertree Place.`;
-        window.open(`https://wa.me/17097309719?text=${msg}`, '_blank');
-        closeReview();
-    }
-
-    function submitViaSMS() {
-        syncOrderToSellerDashboard();
-        checkAndNotifyProof();
-        const text = buildRawTextOrder();
-        window.open(`sms:+17097309719?body=${encodeURIComponent(text)}`, '_self');
-        closeReview();
-    }
-
-    function submitViaMessenger() {
-        syncOrderToSellerDashboard();
-        const text = buildRawTextOrder();
-        navigator.clipboard.writeText(text).then(() => {
-            alert("Order copied! Messenger will now open. Please paste the text and send it.");
-            window.open('https://m.me/', '_blank');
-        });
-        closeReview();
-    }
-
-    function copyOrderDetails() {
-        syncOrderToSellerDashboard();
-        const text = buildRawTextOrder();
-        navigator.clipboard.writeText(text).then(() => alert("Order details copied to clipboard!"));
-    }
+    function exitTrackingScreen() { cart = {}; updateCart(); document.getElementById('tracking-screen').style.display = 'none'; }
 
     function sendCateringInquiry() {
         const selectedDate = document.getElementById('event-date').value;
