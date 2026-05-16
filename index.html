@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Nafis Foods | Order Online</title>
-<link rel="icon" type="image/jpeg" href="logo.jpg">
+    <title>Nafis Foods | Order Online</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --gold: #D4AF37; --dark: #2c2c2c; --white: #ffffff; --light: #f4f4f4; }
@@ -128,7 +128,6 @@
         .feedback-submit-btn { background: var(--dark); color: var(--gold); border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
         .feedback-submit-btn:hover { background: var(--gold); color: var(--dark); }
 
-        /* REAL-TIME TRACKING OVERLAY SCREEN */
         #tracking-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; text-align: center; }
         .tracking-box-card { background: #fafafa; border: 1px solid #eee; border-radius: 20px; padding: 30px; max-width: 450px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         .status-node { display: flex; align-items: center; gap: 15px; margin: 25px 0; opacity: 0.3; transition: 0.3s; font-size: 1.1rem; font-weight: bold; text-align: left; }
@@ -195,7 +194,6 @@
 </header>
 
 <div class="container">
-    <!-- CATERING BOX -->
     <div class="catering-box">
         <h3><i class="fas fa-utensils"></i> Catering & Decoration Services</h3>
         <p>Planning an event? Pick your services and select a date below to inquire.</p>
@@ -215,7 +213,6 @@
         </div>
     </div>
 
-    <!-- DAILY MENU NOTICES -->
     <div class="menu-separator-banner">
         <h2><i class="fas fa-clipboard-list" style="color: var(--gold);"></i> Regular Daily Menu</h2>
         <p>Add items below to place your regular everyday order instantly!</p>
@@ -228,14 +225,19 @@
 
     <h2 class="section-title"><i class="fas fa-bowl-rice"></i> Rice Specialties</h2>
     <div class="menu-list" id="rice-list"></div>
+
+    <h2 class="section-title"><i class="fas fa-mortar-pestle"></i> Authentic Daal (Lentils)</h2>
+    <div class="menu-list" id="daal-list"></div>
+
     <h2 class="section-title"><i class="fas fa-hotdog"></i> Snacks & Fast Food</h2>
     <div class="menu-list" id="snacks-list"></div>
+
     <h2 class="section-title"><i class="fas fa-mortar-pestle"></i> Authentic Salan (Curry)</h2>
     <div class="menu-list" id="salan-list"></div>
+
     <h2 class="section-title"><i class="fas fa-bread-slice"></i> Fresh Roti & Naan</h2>
     <div class="menu-list" id="roti-list"></div>
 
-    <!-- FEEDBACK SECTION -->
     <div class="feedback-form-box">
         <h3><i class="fas fa-pen-fancy"></i> Share Your Feedback</h3>
         <p style="font-size: 0.88rem; color:#666; margin: -5px 0 10px 0;">Your review will display directly on our seller kitchen panel dashboard!</p>
@@ -252,7 +254,6 @@
     </div>
 </div>
 
-<!-- LIVE ORDER TRACKING SCREEN -->
 <div id="tracking-screen">
     <div class="tracking-box-card">
         <h2 style="color: var(--gold); margin-top: 0; letter-spacing: 1px;">LIVE ORDER TRACKING</h2>
@@ -337,7 +338,6 @@
     <img id="lightbox-img" src="" alt="Enlarged Picture">
 </div>
 
-<!-- CLOUD GATEWAY CONFIG -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -372,7 +372,6 @@
             time: timeString
         };
 
-        // Create formatted text strings for external routing references
         let itemsSummary = "";
         let finalBill = 0;
         Object.keys(cart).forEach(k => {
@@ -382,7 +381,6 @@
 
         const rawTextOutput = `Nafis Foods Order #${newOrderId}\nName: ${name}\nPhone: ${phone}\nSpice: ${spice}\nItems:\n${itemsSummary}Total: $${finalBill}\nTime: ${timeString}`;
 
-        // Send to Firebase database reference regardless of chosen pipeline method
         const newOrderRef = push(ref(db, 'orders'));
         const dynamicDatabaseKey = newOrderRef.key;
 
@@ -392,10 +390,8 @@
             document.getElementById('track-order-id').innerText = `#${newOrderId}`;
             document.getElementById('tracking-screen').style.display = 'flex';
             
-            // Listen to real-time dashboard tracking changes
             listenToOrderStatusLive(dynamicDatabaseKey);
 
-            // If they chose standard messaging redirects, launch apps as an accessory
             if (checkoutMethod === 'whatsapp') {
                 window.open(`https://wa.me/17097309719?text=${encodeURIComponent(rawTextOutput)}`, '_blank');
             } else if (checkoutMethod === 'sms') {
@@ -464,6 +460,12 @@
         { name: "Chicken Qabli Pulao", price: 17, cat: "rice", note: "Per Serving", desc: "Aromatic Afghan rice with sweet fried carrots and raisins. Serving size: 1 pack per person (Includes 2 pcs of chicken)." },
         { name: "Boiled Rice", price: 5, cat: "rice", note: "Per Serving", desc: "Fluffy, premium long-grain steamed white basmati rice. Serving size: 1 pack container per person." },
         { name: "Tarke Wale Chawal", price: 6, cat: "rice", note: "Per Plate", desc: "Flavorful basmati rice tempered with a traditional tadka of onions and cumin. Serving size: 1 pack container per person." },
+        
+        { name: "Moong Daal", price: 5, cat: "daal", note: "Per Plate", desc: "Comforting, slow-cooked traditional yellow split mung lentils, finished with a sizzling cumin garlic tadka." },
+        { name: "Masoor Daal", price: 5, cat: "daal", note: "Per Plate", desc: "Classic reddish-orange split lentils simmered smoothly with home spices and tempered with onions." },
+        { name: "Daal Mash", price: 5, cat: "daal", note: "Per Plate", desc: "Perfectly textured, aromatic split white lentils sautéed beautifully with green chilies and ginger garnish." },
+        { name: "Chane Ki Daal", price: 5, cat: "daal", note: "Per Plate", desc: "Hearty split chickpeas slow-simmered in a rich tomato-onion masala paste." },
+        
         { name: "Samosa (1 pc)", price: 3, cat: "snacks", note: "$3 ea / 4 for $10", desc: "Crispy golden triangular pastry wrapper filled with a savory, perfectly spiced potato mash." },
         { name: "Samosa (4 pcs)", price: 10, cat: "snacks", note: "Bundle Price", desc: "A bundle pack of 4 crispy golden samosas. Great for sharing!" },
         { name: "Full Chicken Roast", price: 35, cat: "snacks", note: "", desc: "Whole chicken marinated beautifully in rich house spices and roasted to absolute juicy perfection." },
@@ -474,14 +476,14 @@
         { name: "Shawarma", price: 13, cat: "snacks", note: "", desc: "Shredded seasoned chicken wrapped in warm pita bread with garlic sauce, mayo, and crunchy pickles." },
         { name: "Pakora", price: 10, cat: "snacks", note: "One Plate", desc: "Crispy, golden-fried vegetable fritters made in a seasoned chickpea flour batter." },
         { name: "Raaiyta / Salad", price: 5, cat: "snacks", note: "", desc: "Cool whipped yogurt mixed with roasted cumin, paired with a crisp garden salad layout." },
-        { name: "Daal (Moong/Masoor/Mash)", price: 5, cat: "salan", note: "Per Plate", desc: "Comforting, slow-simmered traditional lentils seasoned with a savory garlic-onion tadka." },
-        { name: "Spicy Mash/Chane Ki Daal", price: 6, cat: "salan", note: "Per Plate", desc: "Hearty chana and mash lentils cooked in a spicy, flavorful bhuna masala gravy." },
+        
         { name: "White Chickpeas", price: 6, cat: "salan", note: "Per Plate", desc: "Tender chickpeas simmered smoothly in a rich, tangy, and deeply spiced onion-tomato gravy." },
         { name: "Chicken Salan", price: 10, cat: "salan", note: "Per Plate", desc: "Classic home-style chicken curry cooked down in an aromatic gravy. Includes 1 chicken piece per serving." },
-        { name: "Alo Ande Salan", price: 8, cat: "salan", note: "Per Plate", desc: "Comforting traditional curry featuring tender boiled eggs and soft potatoes in a spiced broth." },
+        { name: "Ande Qeema Salan", price: 8, cat: "salan", note: "Per Plate", desc: "Savory minced meat and hard-boiled eggs pan-simmered together with a rich, spiced gravy mixture." },
         { name: "Alo Qeema Salan", price: 10, cat: "salan", note: "Per Plate", desc: "Savory minced meat and soft diced potatoes cooked together with fresh green chilies and spices." },
         { name: "Mix Sabzi", price: 8, cat: "salan", note: "Per Plate", desc: "A seasonal medley of fresh garden vegetables sautéed beautifully with traditional herbs." },
         { name: "Alo Matar Salan", price: 8, cat: "salan", note: "Per Plate", desc: "Sweet green peas and soft potatoes simmered evenly in a savory, spiced tomato-onion curry." },
+        
         { name: "Roti (Chapati)", price: 2, cat: "roti", note: "Per Chapati", desc: "Soft, freshly rolled whole-wheat flatbread cooked hot on a traditional tawa." },
         { name: "Roghni Naan", price: 3, cat: "roti", note: "Per Naan", desc: "Soft, pillow-textured tandoori leavened flatbread glazed beautifully with butter and sesame seeds." },
         { name: "Simple Naan", price: 2, cat: "roti", note: "Per Naan", desc: "Classic, fresh tandoor-baked leavened flatbread. Soft and perfect for scooping up curries." },
