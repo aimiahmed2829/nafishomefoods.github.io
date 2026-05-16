@@ -188,8 +188,17 @@
         .order-btn:hover { background: #fff; }
 
         #confirm-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; }
-        .modal-content { background: white; color: var(--dark); padding: 25px; border-radius: 20px; width: 90%; max-width: 480px; box-sizing: border-box; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: white; color: var(--dark); padding: 25px; border-radius: 20px; width: 90%; max-width: 480px; box-sizing: border-box; max-height: 95vh; overflow-y: auto; }
         
+        /* PROOF OF PAYMENT STYLING */
+        .proof-box { background: #fdfaf2; border: 1px dashed var(--gold); border-radius: 12px; padding: 12px; margin-bottom: 15px; text-align: center; }
+        .file-input-wrapper { margin-top: 8px; position: relative; display: inline-block; width: 100%; }
+        .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+        .file-input-btn { background: #fff; border: 1px solid #ccc; padding: 8px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: bold; color: #555; width: 100%; box-sizing: border-box; justify-content: center; transition: 0.2s; }
+        .file-input-wrapper:hover .file-input-btn { border-color: var(--gold); background: #fffefb; }
+        #proof-preview-container { display: none; margin-top: 10px; align-items: center; justify-content: center; gap: 10px; background: white; padding: 6px; border-radius: 6px; border: 1px solid #eee; }
+        #proof-preview-img { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+
         .action-options-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .action-choice-btn { border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; color: white; transition: 0.2s; text-decoration: none;}
         .btn-whatsapp { background: #25D366; } .btn-whatsapp:hover { background: #1ebd59; }
@@ -292,9 +301,21 @@
         <div id="modal-info" style="margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; text-align:center;"></div>
         <div id="modal-items" style="background:#f8f9fa; padding:15px; border-radius:12px; margin:10px 0; max-height:140px; overflow-y:auto; line-height:1.6; font-size:0.9rem;"></div>
         
-        <div style="background: #f0f7ff; border: 1px solid #cce5ff; padding: 12px; border-radius: 10px; margin-bottom: 15px; text-align:center;">
+        <div style="background: #f0f7ff; border: 1px solid #cce5ff; padding: 12px; border-radius: 10px; margin-bottom: 12px; text-align:center;">
             <strong style="color: #004085; font-size:0.9rem;"><i class="fas fa-info-circle"></i> E-Transfer Payment:</strong><br>
             <span style="font-size: 0.85rem; word-break:break-all;">omershahzadahmed22@gmail.com</span>
+        </div>
+
+        <div class="proof-box">
+            <span style="font-size: 0.82rem; color: #666; font-weight: bold;"><i class="fas fa-camera"></i> Paid already? Upload Screenshot (Optional)</span>
+            <div class="file-input-wrapper">
+                <button class="file-input-btn" id="upload-btn-text"><i class="fas fa-image"></i> Choose Screenshot File</button>
+                <input type="file" id="proof-file" accept="image/*" onchange="handleFileSelect(this)">
+            </div>
+            <div id="proof-preview-container">
+                <img id="proof-preview-img" src="" alt="Proof preview">
+                <span style="font-size:0.8rem; color:green; font-weight:bold;"><i class="fas fa-check-circle"></i> Screenshot Ready!</span>
+            </div>
         </div>
 
         <div style="font-size:1.3rem; margin-bottom:15px; text-align:center;"><strong>Total: $<span id="modal-total">0</span></strong></div>
@@ -400,6 +421,25 @@
     }
     function closeLightbox() { document.getElementById('lightbox').style.display = 'none'; }
 
+    function handleFileSelect(input) {
+        const container = document.getElementById('proof-preview-container');
+        const previewImg = document.getElementById('proof-preview-img');
+        const btnText = document.getElementById('upload-btn-text');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                container.style.display = 'flex';
+                btnText.innerHTML = `<i class="fas fa-exchange-alt"></i> Change Screenshot`;
+            }
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            container.style.display = 'none';
+            btnText.innerHTML = `<i class="fas fa-image"></i> Choose Screenshot File`;
+        }
+    }
+
     function sendCateringInquiry() {
         const isCatering = document.getElementById('srv-catering').checked;
         const isDecor = document.getElementById('srv-decor').checked;
@@ -442,9 +482,16 @@
         const name = document.getElementById('cust-name').value;
         const phone = document.getElementById('cust-phone').value;
         const spice = document.getElementById('cust-spice').value || "Not Specified";
+        const hasFile = document.getElementById('proof-file').files.length > 0;
+        
         let details = ""; let total = 0;
         Object.keys(cart).forEach(n => { details += `- ${n} x ${cart[n].qty} ($${cart[n].price * cart[n].qty})\n`; total += cart[n].price * cart[n].qty; });
-        return `ORDER FROM NAFIS FOODS\nName: ${name}\nContact: ${phone}\nSpice Level: ${spice}\n\nItems Ordered:\n${details}\nTOTAL PRICE: $${total}\n\nPayment via E-transfer: omershahzadahmed22@gmail.com\nPickup Location: 14 Peppertree Place.`;
+        
+        let msg = `ORDER FROM NAFIS FOODS\nName: ${name}\nContact: ${phone}\nSpice Level: ${spice}\n\nItems Ordered:\n${details}\nTOTAL PRICE: $${total}\n\nPayment via E-transfer: omershahzadahmed22@gmail.com\nPickup Location: 14 Peppertree Place.`;
+        if (hasFile) {
+            msg += `\n\n(Note: Customer has selected a proof of payment screenshot to attach to this message)`;
+        }
+        return msg;
     }
 
     function showReview() {
@@ -454,6 +501,11 @@
         if (!name || !phone) { alert("Please enter your name and number first."); return; }
         if (!spice) { alert("Please select a spice level preference before continuing."); return; }
         
+        // Reset file input and preview container states nicely
+        document.getElementById('proof-file').value = "";
+        document.getElementById('proof-preview-container').style.display = 'none';
+        document.getElementById('upload-btn-text').innerHTML = `<i class="fas fa-image"></i> Choose Screenshot File`;
+
         document.getElementById('modal-info').innerHTML = `<strong>${name}</strong><br>${phone}<br><span style="color:#e44d26; font-weight:bold;">🌶️ Spice: ${spice}</span>`;
         let listHtml = ""; let total = 0;
         Object.keys(cart).forEach(item => { const cost = cart[item].price * cart[item].qty; listHtml += `• ${item} x ${cart[item].qty} ($${cost})<br>`; total += cost; });
@@ -464,18 +516,34 @@
     
     function closeReview() { document.getElementById('confirm-modal').style.display = 'none'; }
     
+    function checkAndNotifyProof() {
+        const hasFile = document.getElementById('proof-file').files.length > 0;
+        if (hasFile) {
+            alert("Your order details text has been copied!\n\nWhen your app opens, remember to paste the text AND select your payment screenshot from your photo library to send it together.");
+        }
+    }
+
     function submitViaWhatsApp() {
+        checkAndNotifyProof();
         const name = document.getElementById('cust-name').value;
         const phone = document.getElementById('cust-phone').value;
         const spice = document.getElementById('cust-spice').value || "Not Specified";
+        const hasFile = document.getElementById('proof-file').files.length > 0;
+        
         let details = ""; let total = 0;
         Object.keys(cart).forEach(n => { details += `- ${n} x ${cart[n].qty} ($${cart[n].price * cart[n].qty})%0A`; total += cart[n].price * cart[n].qty; });
-        const msg = `ORDER FROM NAFIS FOODS: ${name}%0AContact: ${phone}%0ASpice Level: ${spice}%0A%0AItems:%0A${details}%0ATOTAL: $${total}%0A%0APayment via E-transfer to omershahzadahmed22@gmail.com%0A%0APickup: 14 Peppertree Place.`;
+        
+        let msg = `ORDER FROM NAFIS FOODS: ${name}%0AContact: ${phone}%0ASpice Level: ${spice}%0A%0AItems:%0A${details}%0ATOTAL: $${total}%0A%0APayment via E-transfer to omershahzadahmed22@gmail.com%0A%0APickup: 14 Peppertree Place.`;
+        if (hasFile) {
+            msg += `%0A%0A(Proof of payment screenshot is attached below)`;
+        }
+        
         window.open(`https://wa.me/17097309719?text=${msg}`, '_blank');
         closeReview();
     }
 
     function submitViaSMS() {
+        checkAndNotifyProof();
         const text = buildRawTextOrder();
         window.open(`sms:+17097309719?body=${encodeURIComponent(text)}`, '_self');
         closeReview();
@@ -484,7 +552,7 @@
     function submitViaMessenger() {
         const text = buildRawTextOrder();
         navigator.clipboard.writeText(text).then(() => {
-            alert("Your order details have been copied! Messenger will now open. Please paste the copied text into your chat with us.");
+            alert("Your order details have been copied! Messenger will now open.\n\nPlease paste the copied text into your chat with us and attach your screenshot manually from your gallery if you uploaded one.");
             window.open('https://m.me/', '_blank');
         }).catch(err => {
             window.open('https://m.me/', '_blank');
