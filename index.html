@@ -97,8 +97,8 @@
         }
         .notice-badge { background: #fff3cd; color: #856404; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; border: 1px solid #ffeeba; display: inline-flex; align-items: center; gap: 6px; }
         
-        .inquiry-btn { background: #25D366; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 3px 6px rgba(37, 211, 102, 0.15); transition: 0.2s; }
-        .inquiry-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25); }
+        .inquiry-btn { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 3px 6px rgba(0,123,255,0.15); transition: 0.2s; }
+        .inquiry-btn:hover { background: #0056b3; transform: translateY(-1px); }
 
         /* REGULAR ORDER BANNER SEPARATOR */
         .menu-separator-banner {
@@ -183,10 +183,19 @@
         .cart-tag { background: rgba(212, 175, 55, 0.15); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--gold); display: flex; align-items: center; gap: 8px; font-size: 0.8rem; }
         .remove-btn { color: #ff6b6b; cursor: pointer; border: none; background: none; font-weight: bold; font-size: 1.2rem; }
         .order-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .order-btn { flex: 1; background: #25D366; color: white; border: none; padding: 14px; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .order-btn { flex: 1; background: var(--gold); color: var(--dark); border: none; padding: 14px; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .order-btn:hover { background: #fff; }
 
         #confirm-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; }
-        .modal-content { background: white; color: var(--dark); padding: 30px; border-radius: 20px; width: 90%; max-width: 480px; box-sizing: border-box; }
+        .modal-content { background: white; color: var(--dark); padding: 25px; border-radius: 20px; width: 90%; max-width: 480px; box-sizing: border-box; max-height: 90vh; overflow-y: auto; }
+        
+        .action-options-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .action-choice-btn { border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; color: white; transition: 0.2s; text-decoration: none;}
+        .btn-whatsapp { background: #25D366; } .btn-whatsapp:hover { background: #1ebd59; }
+        .btn-sms { background: #007bff; } .btn-sms:hover { background: #0056b3; }
+        .btn-messenger { background: #006AFF; } .btn-messenger:hover { background: #004ecc; }
+        .btn-copy { background: #6c757d; } .btn-copy:hover { background: #545b62; }
+        .btn-cancel { background: #f1f1f1; color: #333; margin-top: 5px; } .btn-cancel:hover { background: #ddd; }
     </style>
 </head>
 <body>
@@ -224,7 +233,7 @@
 
         <div class="catering-footer">
             <div class="notice-badge"><i class="fas fa-exclamation-circle"></i> Book at least 2 weeks prior</div>
-            <button class="inquiry-btn" onclick="sendCateringInquiry()"><i class="fab fa-whatsapp"></i> Send Inquiry</button>
+            <button class="inquiry-btn" onclick="sendCateringInquiry()"><i class="fas fa-paper-plane"></i> Send Inquiry via SMS</button>
         </div>
     </div>
 
@@ -266,25 +275,29 @@
     <div class="cart-items-preview" id="cart-preview"></div>
     <div class="order-row">
         <div style="font-size: 1.2rem;"><strong>Total: $<span id="cart-total">0</span></strong></div>
-        <button class="order-btn" onclick="showReview()"><i class="fab fa-whatsapp"></i> Review Order</button>
+        <button class="order-btn" onclick="showReview()"><i class="fas fa-shopping-bag"></i> Review Order</button>
     </div>
 </div>
 
 <div id="confirm-modal">
     <div class="modal-content">
-        <h2 style="color:var(--gold); margin-top:0;">Confirm Your Order</h2>
-        <div id="modal-info" style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;"></div>
-        <div id="modal-items" style="background:#f8f9fa; padding:20px; border-radius:12px; margin:15px 0; max-height:180px; overflow-y:auto; line-height:1.8;"></div>
+        <h2 style="color:var(--gold); margin-top:0; font-size:1.5rem; text-transform:uppercase; text-align:center;">Review Your Order</h2>
+        <div id="modal-info" style="margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; text-align:center;"></div>
+        <div id="modal-items" style="background:#f8f9fa; padding:15px; border-radius:12px; margin:10px 0; max-height:140px; overflow-y:auto; line-height:1.6; font-size:0.9rem;"></div>
         
-        <div style="background: #f0f7ff; border: 1px solid #cce5ff; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-            <strong style="color: #004085;"><i class="fas fa-info-circle"></i> E-Transfer Payment:</strong><br>
-            <span style="font-size: 0.95rem;">omershahzadahmed22@gmail.com</span>
+        <div style="background: #f0f7ff; border: 1px solid #cce5ff; padding: 12px; border-radius: 10px; margin-bottom: 15px; text-align:center;">
+            <strong style="color: #004085; font-size:0.9rem;"><i class="fas fa-info-circle"></i> E-Transfer Payment:</strong><br>
+            <span style="font-size: 0.85rem; word-break:break-all;">omershahzadahmed22@gmail.com</span>
         </div>
 
-        <div style="font-size:1.3rem; margin-bottom:25px;"><strong>Total: $<span id="modal-total">0</span></strong></div>
-        <div style="display:flex; flex-direction: column; gap:10px;">
-            <button style="background:#25D366; color:white; border:none; padding:16px; border-radius:50px; font-weight:bold; cursor:pointer;" onclick="sendOrder()">Confirm & Send WhatsApp</button>
-            <button style="background:#f1f1f1; border:none; padding:12px; border-radius:50px; font-weight:bold; cursor:pointer;" onclick="closeReview()">Edit Order</button>
+        <div style="font-size:1.3rem; margin-bottom:15px; text-align:center;"><strong>Total: $<span id="modal-total">0</span></strong></div>
+        
+        <div class="action-options-grid">
+            <button class="action-choice-btn btn-whatsapp" onclick="submitViaWhatsApp()"><i class="fab fa-whatsapp"></i> Send via WhatsApp</button>
+            <button class="action-choice-btn btn-sms" onclick="submitViaSMS()"><i class="fas fa-comment-alt"></i> Send via Text Message (SMS)</button>
+            <button class="action-choice-btn btn-messenger" onclick="submitViaMessenger()"><i class="fab fa-facebook-messenger"></i> Send via FB Messenger</button>
+            <button class="action-choice-btn btn-copy" onclick="copyOrderDetails()"><i class="fas fa-copy"></i> Copy Order Details Only</button>
+            <button class="action-choice-btn btn-cancel" onclick="closeReview()">← Go Back & Edit</button>
         </div>
     </div>
 </div>
@@ -400,7 +413,7 @@
         else if (isDecor) chosenService = "Decoration Service Only";
 
         const msg = `Hi Nafis Foods! I would like to inquire about your ${chosenService} for my event on ${selectedDate}.`;
-        window.open(`https://wa.me/17097309719?text=${encodeURIComponent(msg)}`, '_blank');
+        window.open(`sms:+17097309719?body=${encodeURIComponent(msg)}`, '_self');
     }
 
     function addToCart(name, price) { if (cart[name]) cart[name].qty += 1; else cart[name] = { price: price, qty: 1 }; updateCart(); }
@@ -417,6 +430,15 @@
             totalDisp.innerText = total;
         } else bar.style.display = 'none';
     }
+    
+    function buildRawTextOrder() {
+        const name = document.getElementById('cust-name').value;
+        const phone = document.getElementById('cust-phone').value;
+        let details = ""; let total = 0;
+        Object.keys(cart).forEach(n => { details += `- ${n} x ${cart[n].qty} ($${cart[n].price * cart[n].qty})\n`; total += cart[n].price * cart[n].qty; });
+        return `ORDER FROM NAFIS FOODS\nName: ${name}\nContact: ${phone}\n\nItems Ordered:\n${details}\nTOTAL PRICE: $${total}\n\nPayment via E-transfer: omershahzadahmed22@gmail.com\nPickup Location: 14 Peppertree Place.`;
+    }
+
     function showReview() {
         const name = document.getElementById('cust-name').value;
         const phone = document.getElementById('cust-phone').value;
@@ -428,8 +450,10 @@
         document.getElementById('modal-total').innerText = total;
         document.getElementById('confirm-modal').style.display = 'flex';
     }
+    
     function closeReview() { document.getElementById('confirm-modal').style.display = 'none'; }
-    function sendOrder() {
+    
+    function submitViaWhatsApp() {
         const name = document.getElementById('cust-name').value;
         const phone = document.getElementById('cust-phone').value;
         let details = ""; let total = 0;
@@ -438,6 +462,33 @@
         window.open(`https://wa.me/17097309719?text=${msg}`, '_blank');
         closeReview();
     }
+
+    function submitViaSMS() {
+        const text = buildRawTextOrder();
+        window.open(`sms:+17097309719?body=${encodeURIComponent(text)}`, '_self');
+        closeReview();
+    }
+
+    function submitViaMessenger() {
+        const text = buildRawTextOrder();
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Your order details have been copied! Messenger will now open. Please paste the copied text into your chat with us.");
+            window.open('https://m.me/', '_blank');
+        }).catch(err => {
+            window.open('https://m.me/', '_blank');
+        });
+        closeReview();
+    }
+
+    function copyOrderDetails() {
+        const text = buildRawTextOrder();
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Order details copied to clipboard! You can paste this anywhere manually.");
+        }).catch(err => {
+            alert("Could not copy. Please screenshot your order items summary screen.");
+        });
+    }
+
     renderMenu();
 </script>
 </body>
