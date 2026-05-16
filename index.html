@@ -174,8 +174,12 @@
         #proof-preview-img { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
 
         .action-options-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        .submit-direct-btn { background: #28a745; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 10px rgba(40,167,69,0.2); }
+        .submit-direct-btn { background: #28a745; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 10px rgba(40,167,69,0.15); }
         .submit-direct-btn:hover { background: #218838; }
+        .whatsapp-btn { background: #25D366; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 10px rgba(37,211,102,0.15); }
+        .whatsapp-btn:hover { background: #1ebd58; }
+        .sms-btn { background: #17a2b8; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 10px rgba(23,162,184,0.15); }
+        .sms-btn:hover { background: #138496; }
         .btn-cancel { background: #f1f1f1; color: #333; margin-top: 5px; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
@@ -190,6 +194,7 @@
 </header>
 
 <div class="container">
+    <!-- CATERING BOX -->
     <div class="catering-box">
         <h3><i class="fas fa-utensils"></i> Catering & Decoration Services</h3>
         <p>Planning an event? Pick your services and select a date below to inquire.</p>
@@ -209,6 +214,7 @@
         </div>
     </div>
 
+    <!-- DAILY MENU NOTICES -->
     <div class="menu-separator-banner">
         <h2><i class="fas fa-clipboard-list" style="color: var(--gold);"></i> Regular Daily Menu</h2>
         <p>Add items below to place your regular everyday order instantly!</p>
@@ -228,6 +234,7 @@
     <h2 class="section-title"><i class="fas fa-bread-slice"></i> Fresh Roti & Naan</h2>
     <div class="menu-list" id="roti-list"></div>
 
+    <!-- FEEDBACK SECTION -->
     <div class="feedback-form-box">
         <h3><i class="fas fa-pen-fancy"></i> Share Your Feedback</h3>
         <p style="font-size: 0.88rem; color:#666; margin: -5px 0 10px 0;">Your review will display directly on our seller kitchen panel dashboard!</p>
@@ -244,6 +251,7 @@
     </div>
 </div>
 
+<!-- LIVE ORDER TRACKING SCREEN -->
 <div id="tracking-screen">
     <div class="tracking-box-card">
         <h2 style="color: var(--gold); margin-top: 0; letter-spacing: 1px;">LIVE ORDER TRACKING</h2>
@@ -315,7 +323,9 @@
         <div style="font-size:1.3rem; margin-bottom:15px; text-align:center;"><strong>Total: $<span id="modal-total">0</span></strong></div>
         
         <div class="action-options-grid">
-            <button class="submit-direct-btn" onclick="submitDirectOrder()"><i class="fas fa-paper-plane"></i> Place Order Instantly</button>
+            <button class="submit-direct-btn" onclick="executeOrderPipeline('direct')"><i class="fas fa-bolt"></i> Place Order Instantly</button>
+            <button class="whatsapp-btn" onclick="executeOrderPipeline('whatsapp')"><i class="fab fa-whatsapp"></i> Checkout via WhatsApp</button>
+            <button class="sms-btn" onclick="executeOrderPipeline('sms')"><i class="fas fa-comment-alt"></i> Checkout via SMS Text</button>
             <button class="btn-cancel" onclick="closeReview()">← Go Back & Edit</button>
         </div>
     </div>
@@ -326,6 +336,7 @@
     <img id="lightbox-img" src="" alt="Enlarged Picture">
 </div>
 
+<!-- CLOUD GATEWAY CONFIG -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -342,7 +353,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    window.submitDirectOrder = function() {
+    window.executeOrderPipeline = function(checkoutMethod) {
         const name = document.getElementById('cust-name').value.trim();
         const phone = document.getElementById('cust-phone').value.trim();
         const spice = document.getElementById('cust-spice').value;
@@ -360,6 +371,17 @@
             time: timeString
         };
 
+        // Create formatted text strings for external routing references
+        let itemsSummary = "";
+        let finalBill = 0;
+        Object.keys(cart).forEach(k => {
+            itemsSummary += `• ${k} x ${cart[k].qty}\n`;
+            finalBill += (cart[k].price * cart[k].qty);
+        });
+
+        const rawTextOutput = `Nafis Foods Order #${newOrderId}\nName: ${name}\nPhone: ${phone}\nSpice: ${spice}\nItems:\n${itemsSummary}Total: $${finalBill}\nTime: ${timeString}`;
+
+        // Send to Firebase database reference regardless of chosen pipeline method
         const newOrderRef = push(ref(db, 'orders'));
         const dynamicDatabaseKey = newOrderRef.key;
 
@@ -369,21 +391,25 @@
             document.getElementById('track-order-id').innerText = `#${newOrderId}`;
             document.getElementById('tracking-screen').style.display = 'flex';
             
-            // Start listening for status revisions from the kitchen admin dashboard live
+            // Listen to real-time dashboard tracking changes
             listenToOrderStatusLive(dynamicDatabaseKey);
+
+            // If they chose standard messaging redirects, launch apps as an accessory
+            if (checkoutMethod === 'whatsapp') {
+                window.open(`https://wa.me/17097309719?text=${encodeURIComponent(rawTextOutput)}`, '_blank');
+            } else if (checkoutMethod === 'sms') {
+                window.open(`sms:+17097309719?body=${encodeURIComponent(rawTextOutput)}`, '_self');
+            }
         });
     };
 
     function listenToOrderStatusLive(dbKey) {
         onValue(ref(db, 'orders/' + dbKey), (snapshot) => {
             const orderData = snapshot.val();
-            
-            // If order card gets deleted by seller from admin panel, consider it cancelled
             if (!orderData) {
                 updateTrackingUI('cancelled');
                 return;
             }
-
             updateTrackingUI(orderData.status);
         });
     }
@@ -396,10 +422,7 @@
             document.getElementById('node-pending').classList.add('active');
         } else if (status === 'preparing') {
             document.getElementById('node-preparing').classList.add('active');
-        } else if (status === 'ready') {
-            document.getElementById('node-ready').classList.add('active');
-            document.getElementById('close-track-btn').style.display = 'block';
-        } else if (status === 'completed') {
+        } else if (status === 'ready' || status === 'completed') {
             document.getElementById('node-ready').classList.add('active');
             document.getElementById('close-track-btn').style.display = 'block';
         } else if (status === 'cancelled') {
@@ -566,7 +589,7 @@
 
         document.getElementById('modal-info').innerHTML = `<strong>${name}</strong><br>${phone}<br><span style="color:#e44d26; font-weight:bold;">🌶️ Spice: ${spice}</span>`;
         let listHtml = ""; let total = 0;
-        Object.keys(cart).forEach(item => { const cost = cart[item].price * cart[item].qty; listHtml += `• ${item} x ${cart[item].qty} ($${cost})br>`; total += cost; });
+        Object.keys(cart).forEach(item => { const cost = cart[item].price * cart[item].qty; listHtml += `• ${item} x ${cart[item].qty} ($${cost})<br>`; total += cost; });
         document.getElementById('modal-items').innerHTML = listHtml;
         document.getElementById('modal-total').innerText = total;
         document.getElementById('confirm-modal').style.display = 'flex';
